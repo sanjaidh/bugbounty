@@ -23,7 +23,7 @@ const ADMIN_SETUP_KEY = process.env.ADMIN_SETUP_KEY || "cybercarnival-admin-setu
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: process.env.COOKIE_SECURE === "true",
   sameSite: "lax" as const,
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
   path: "/",
@@ -101,6 +101,7 @@ authRouter.post("/login", async (req: Request, res: Response): Promise<void> => 
     logger.info("User logged in", { userId: user.id, username: user.username });
 
     res.json({
+      token,
       user: {
         id: user.id,
         username: user.username,

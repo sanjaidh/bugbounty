@@ -30,10 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string) => {
     const res = await authApi.login(username, password);
+    if ((res.data as any).token) {
+      localStorage.setItem("cc_token", (res.data as any).token);
+    }
     setUser(res.data.user);
   };
 
   const logout = async () => {
+    localStorage.removeItem("cc_token");
     await authApi.logout();
     setUser(null);
   };

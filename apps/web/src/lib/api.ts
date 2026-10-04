@@ -8,6 +8,15 @@ export const api = axios.create({
   timeout: 15000,
 });
 
+// Request interceptor — attach token if present
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("cc_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Response interceptor — normalize errors
 api.interceptors.response.use(
   (res) => res,
