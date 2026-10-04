@@ -18,7 +18,7 @@ const CHALLENGES = [
     description:
       "We intercepted a strange audio transmission. Hidden within the static is an image. Decode it . What does the image say?",
     hintText: "Try QSSTV or Black Cat Systems to decode the .wav file.",
-    contentUrl: "/assets/stage1_signal.wav",
+    contentUrl: "/assets/stage1_signal.aac",
     answerHash: hashAnswer("flag{sstv_signal_in_the_static_robot36}"),
     points: 150,
   },
