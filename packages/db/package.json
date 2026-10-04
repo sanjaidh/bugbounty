@@ -5,7 +5,7 @@
   "scripts": {
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "ts-node prisma/seed.ts",
+    "db:seed": "ts-node -O '{\"module\":\"commonjs\"}' prisma/seed.ts",
     "generate": "prisma generate",
     "studio": "prisma studio",
     "build": "pnpm generate"
