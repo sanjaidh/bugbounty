@@ -26,7 +26,7 @@ const CHALLENGES = [
       "We intercepted a strange audio transmission. Hidden within the static is an image. Decode it . What does the image say?",
     hintText: "Try QSSTV or Black Cat Systems to decode the .wav file.",
     contentUrl: "/assets/stage1_signal.wav",
-    answerHash: hashAnswer("REPLACE_WITH_TEXT_IN_SSTV_IMAGE"),
+    answerHash: hashAnswer("flag{sstv_signal_in_the_static_robot36}"),
     points: 150,
   },
   {
@@ -37,7 +37,7 @@ const CHALLENGES = [
       "Follow the link and find what's waiting at the other end of the drive.",
     hintText: "Look inside the image carefully — sometimes things hide in plain sight.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_DRIVE_DOCUMENT_CODE"),
+    answerHash: hashAnswer("flag{osint_google_drive_hidden_document}"),
     points: 150,
   },
   {
@@ -48,7 +48,7 @@ const CHALLENGES = [
       "A small internal billing tool was spun up in a hurry and exposed to the network for \"just a few days\" during a migration. It's still up. The devs swore the admin panel was locked down — find out if they were right, and recover the flag from the admin dashboard.",
     hintText: "Inspect the web panel and check for hidden or weak authentication endpoints.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_STAGE3_FLAG"),
+    answerHash: hashAnswer("bugbounty{jwt_alg_none_strikes_again}"),
     points: 300,
   },
   {
@@ -59,7 +59,7 @@ const CHALLENGES = [
       "An intern says they \"didn't touch anything\" before the incident, but the disk tells a different story. We've pulled a raw image from their workstation. Somewhere in the slack space or deleted file table is evidence of what they tried to erase — and the flag",
     hintText: "Use disk forensics tools like Autopsy, FTK Imager, or sleuthkit.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_STAGE4_FLAG"),
+    answerHash: hashAnswer("flag{slack_space_deleted_forensics_evidence}"),
     points: 250,
   },
   {
@@ -70,7 +70,7 @@ const CHALLENGES = [
       "A legacy internal API signs requests using ECDSA so clients can prove their identity without sending passwords. We captured two signed requests from the same service account during a traffic dump. The dev team insists their signing implementation is \"textbook standard.\" See if that holds up — recover the private key and sign your own admin request to get the flag.",
     hintText: "Check for nonce reuse (k-reuse) in ECDSA signatures.",
     contentUrl: "/assets/ecdsa_capture.zip",
-    answerHash: hashAnswer("REPLACE_WITH_STAGE5_FLAG"),
+    answerHash: hashAnswer("flag{ecdsa_nonce_reuse_private_key_recovery}"),
     points: 300,
   },
   {
@@ -81,7 +81,7 @@ const CHALLENGES = [
       "Someone on the dev team wrote a quick CLI note-taking tool in C \"for internal use only.\" It's been running on a server with a flag sitting in an environment variable. The binary and a netcat connection are provided — find the bug, get a shell, read the flag.",
     hintText: "Check for buffer overflows or format string vulnerabilities in the C binary.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_STAGE6_FLAG"),
+    answerHash: hashAnswer("flag{notes_use_after_free_print_func_hijack}"),
     points: 350,
   },
   {
@@ -92,7 +92,7 @@ const CHALLENGES = [
       "A junior dev built a \"safe\" Python calculator for internal use, convinced that blacklisting a few keywords makes eval() safe. It's running locally and reads the flag into memory at startup. Break out of the sandbox and read it.",
     hintText: "Inspect Python builtins, __subclasses__(), or unicode bypasses to escape the sandbox.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_STAGE7_FLAG"),
+    answerHash: hashAnswer("flag{python_eval_sandbox_escape_via_subclasses}"),
     points: 300,
   },
   {
@@ -103,7 +103,7 @@ const CHALLENGES = [
       "We found an old internal licensing tool on a decommissioned build server. It validates a \"license key\" before unlocking a hidden admin panel, but nobody left notes on the algorithm. Reverse engineer the binary, find a valid key, and run it to reveal the flag.",
     hintText: "Decompile with Ghidra or IDA Pro to find the key validation routine.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_STAGE8_FLAG"),
+    answerHash: hashAnswer("flag{serial_checker_license_key_validated}"),
     finalBaseCode: "CYBERCARNIVAL_STAGE8_SECRET_SEED_2026",
     points: 258,
   },
@@ -111,6 +111,23 @@ const CHALLENGES = [
 
 async function main() {
   console.log("🌱  Seeding CyberCarnival database...");
+
+  // Seed Admin Account
+  const adminPasswordHash = "$2a$12$PW82hosw4rAYgjN.r70xtOuDd4QbuC19cj7Pk9Ds33vknoKBA8uAS";
+  await prisma.user.upsert({
+    where: { username: "admin" },
+    update: {
+      passwordHash: adminPasswordHash,
+      role: "ADMIN",
+    },
+    create: {
+      username: "admin",
+      email: "admin@cybercarnival.org",
+      passwordHash: adminPasswordHash,
+      role: "ADMIN",
+    },
+  });
+  console.log("  ✓ Admin User: admin (password: admin123)");
 
   for (const challenge of CHALLENGES) {
     await prisma.challenge.upsert({
