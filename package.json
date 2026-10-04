@@ -1,0 +1,17 @@
+{
+  "name": "cybercarnival",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CyberCarnival Bug Bounty Competition Platform",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter api dev\" \"pnpm --filter web dev\"",
+    "build": "pnpm --filter db build && pnpm --filter api build && pnpm --filter web build",
+    "db:push": "pnpm --filter db db:push",
+    "db:migrate": "pnpm --filter db db:migrate",
+    "db:seed": "pnpm --filter db db:seed",
+    "db:studio": "pnpm --filter db studio"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

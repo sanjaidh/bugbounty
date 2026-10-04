@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      target: api-runner
+    container_name: cybercarnival-api
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=file:/app/packages/db/prisma/dev.db
+      - JWT_SECRET=super_secret_cybercarnival_2026_jwt_key_98765
+      - COMPETITION_START=2026-10-08T04:30:00.000Z
+      - COMPETITION_END=2026-10-08T18:30:00.000Z
+    volumes:
+      - sqlite_data:/app/packages/db/prisma
+      - ./apps/api/assets:/app/apps/api/assets
+    expose:
+      - "3001"
+
+  web:
+    build:
+      context: .
+      target: web-runner
+    container_name: cybercarnival-web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlite_data:

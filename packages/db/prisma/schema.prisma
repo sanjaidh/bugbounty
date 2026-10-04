@@ -1,0 +1,105 @@
+// Prisma schema for CyberCarnival
+// Database: SQLite (local dev) / PostgreSQL (production compatible)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  members   User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("teams")
+}
+
+model User {
+  id           String                 @id @default(cuid())
+  username     String                 @unique
+  email        String                 @unique
+  passwordHash String                 @map("password_hash")
+  role         String                 @default("PARTICIPANT") // ADMIN | PARTICIPANT
+  teamId       String?                @map("team_id")
+  team         Team?                  @relation(fields: [teamId], references: [id])
+  submissions  Submission[]
+  progress     ParticipantChallenge[]
+  auditLogs    AuditLog[]
+  isActive     Boolean                @default(true) @map("is_active")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Challenge {
+  id            String                 @id @default(cuid())
+  stageNumber   Int                    @unique @map("stage_number")
+  title         String
+  type          String                 // SSTV | OSINT | STEGANOGRAPHY | NETWORK | WEB | REVERSE_ENGINEERING
+  description   String
+  hintText      String?                @map("hint_text")
+  contentUrl    String?                @map("content_url")
+  contentHtml   String?                @map("content_html")
+  answerHash    String?                @map("answer_hash")
+  finalBaseCode String?                @map("final_base_code")
+  points        Int                    @default(100)
+  isActive      Boolean                @default(true) @map("is_active")
+  maxAttempts   Int                    @default(10) @map("max_attempts")
+  cooldownMins  Int                    @default(5) @map("cooldown_mins")
+  submissions   Submission[]
+  progress      ParticipantChallenge[]
+  createdAt     DateTime               @default(now()) @map("created_at")
+  updatedAt     DateTime               @updatedAt @map("updated_at")
+
+  @@map("challenges")
+}
+
+model ParticipantChallenge {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  challengeId String    @map("challenge_id")
+  status      String    @default("LOCKED") // LOCKED | UNLOCKED | SOLVED
+  attempts    Int       @default(0)
+  lockedUntil DateTime? @map("locked_until")
+  solvedAt    DateTime? @map("solved_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@unique([userId, challengeId])
+  @@map("participant_challenges")
+}
+
+model Submission {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  challengeId   String    @map("challenge_id")
+  submittedFlag String    @map("submitted_flag")
+  isCorrect     Boolean   @map("is_correct")
+  ipAddress     String?   @map("ip_address")
+  userAgent     String?   @map("user_agent")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("submissions")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String   @map("admin_id")
+  action    String
+  metadata  String?  // JSON string
+  admin     User     @relation(fields: [adminId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}
