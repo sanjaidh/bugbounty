@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import AnimatedCounter from "../components/AnimatedCounter";
 import { adminApi } from "../lib/api";
 import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 import { sound } from "../lib/sound";
 
 interface Stats {
@@ -65,6 +67,8 @@ interface CompetitionConfig {
 }
 
 export default function AdminPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { showSuccess, showError } = useToast();
   const [activeTab, setActiveTab] = useState<"challenges" | "competition" | "overview" | "teams" | "users" | "logs">("challenges");
   const [stats, setStats] = useState<Stats | null>(null);
@@ -148,8 +152,12 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    if (!user || user.role !== "ADMIN") {
+      navigate("/");
+      return;
+    }
     fetchData();
-  }, []);
+  }, [user]);
 
   const handleTabChange = (tab: typeof activeTab) => {
     sound.playClick();
