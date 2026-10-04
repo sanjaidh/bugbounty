@@ -15,7 +15,7 @@ services:
       - COMPETITION_START=2026-10-08T04:30:00.000Z
       - COMPETITION_END=2026-10-08T18:30:00.000Z
     volumes:
-      - ./packages/db/prisma/dev.db:/app/packages/db/prisma/dev.db
+      - ./packages/db/prisma:/app/packages/db/prisma
       - ./apps/api/assets:/app/apps/api/assets
     expose:
       - "3001"

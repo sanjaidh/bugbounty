@@ -42,7 +42,7 @@ EXPOSE 3001
 ENV NODE_ENV=production
 ENV PORT=3001
 
-CMD ["sh", "-c", "pnpm db:push && pnpm --filter db db:seed && pnpm --filter api start"]
+CMD ["sh", "-c", "pnpm --filter db db:push || true; pnpm --filter db db:seed || true; pnpm --filter api start"]
 
 # ── Stage 3: Web Frontend Nginx Runtime ────────────────────────────────────────
 FROM nginx:alpine AS web-runner
