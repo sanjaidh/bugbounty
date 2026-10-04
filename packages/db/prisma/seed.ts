@@ -23,7 +23,7 @@ const CHALLENGES = [
     title: "Signal in the Noise",
     type: "SSTV",
     description:
-      "We intercepted a strange audio transmission. Hidden within the static is an image. Decode it — SSTV mode: Robot 36. What does the image say?",
+      "We intercepted a strange audio transmission. Hidden within the static is an image. Decode it . What does the image say?",
     hintText: "Try QSSTV or Black Cat Systems to decode the .wav file.",
     contentUrl: "/assets/stage1_signal.wav",
     answerHash: hashAnswer("REPLACE_WITH_TEXT_IN_SSTV_IMAGE"),
@@ -34,7 +34,7 @@ const CHALLENGES = [
     title: "The Drive",
     type: "OSINT",
     description:
-      "The image led you somewhere. Follow the link and find what's waiting at the other end of the drive.",
+      "Follow the link and find what's waiting at the other end of the drive.",
     hintText: "Look inside the image carefully — sometimes things hide in plain sight.",
     contentUrl: null,
     answerHash: hashAnswer("REPLACE_WITH_DRIVE_DOCUMENT_CODE"),
@@ -42,72 +42,70 @@ const CHALLENGES = [
   },
   {
     stageNumber: 3,
-    title: "Monkey Business",
+    title: "Backdoor in the Billing Panel",
     type: "STEGANOGRAPHY",
     description:
-      "A peculiar meme. Monkeys always know more than they let on. Dig into the metadata — the coordinates are somewhere in there.",
-    hintText: "exiftool is your friend. GPS coordinates — what do they reveal on Google Maps?",
-    contentUrl: "/assets/stage3_meme.jpg",
-    answerHash: hashAnswer("12.9716,77.5946"),
-    points: 200,
-  },
-  {
-    stageNumber: 4,
-    title: "You Are Here",
-    type: "OSINT",
-    description:
-      "Those coordinates point to a real location. Find the establishment at that spot. What is its name?",
-    hintText: "Drop the pin on Google Maps. Look for nearby businesses.",
+      "A small internal billing tool was spun up in a hurry and exposed to the network for \"just a few days\" during a migration. It's still up. The devs swore the admin panel was locked down — find out if they were right, and recover the flag from the admin dashboard.",
+    hintText: "Inspect the web panel and check for hidden or weak authentication endpoints.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_SHOP_NAME"),
-    points: 200,
-  },
-  {
-    stageNumber: 5,
-    title: "The Hidden Door",
-    type: "WEB",
-    description:
-      "Every shop has a back door. Combine the shop name with .vercel.app — then find the secret path. There's a QR code waiting for you.",
-    hintText: "Try appending /secret or /hidden to the URL. Not every path is indexed.",
-    contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_QR_ENCODED_TEXT"),
-    points: 250,
-  },
-  {
-    stageNumber: 6,
-    title: "Packet Sniffer",
-    type: "NETWORK",
-    description:
-      "The QR revealed an IP address. Run Nmap against it. What service is listening? Submit the flag you find.",
-    hintText: "nmap -sV -p- <IP>. Check all ports. Banner grabbing might help.",
-    contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_VPS_SERVICE_FLAG"),
+    answerHash: hashAnswer("REPLACE_WITH_STAGE3_FLAG"),
     points: 300,
   },
   {
-    stageNumber: 7,
-    title: "Down the Rabbit Hole",
+    stageNumber: 4,
+    title: "The Intern Who Deleted Everything",
     type: "OSINT",
     description:
-      "The hidden service pointed you to another drive. Watch the video carefully. There is a code hidden within it.",
-    hintText: "Watch every frame. Pause at the right moment.",
+      "An intern says they \"didn't touch anything\" before the incident, but the disk tells a different story. We've pulled a raw image from their workstation. Somewhere in the slack space or deleted file table is evidence of what they tried to erase — and the flag",
+    hintText: "Use disk forensics tools like Autopsy, FTK Imager, or sleuthkit.",
     contentUrl: null,
-    answerHash: hashAnswer("REPLACE_WITH_VIDEO_CODE"),
+    answerHash: hashAnswer("REPLACE_WITH_STAGE4_FLAG"),
+    points: 250,
+  },
+  {
+    stageNumber: 5,
+    title: "The Lazy Signer",
+    type: "WEB",
+    description:
+      "A legacy internal API signs requests using ECDSA so clients can prove their identity without sending passwords. We captured two signed requests from the same service account during a traffic dump. The dev team insists their signing implementation is \"textbook standard.\" See if that holds up — recover the private key and sign your own admin request to get the flag.",
+    hintText: "Check for nonce reuse (k-reuse) in ECDSA signatures.",
+    contentUrl: "/assets/ecdsa_capture.zip",
+    answerHash: hashAnswer("REPLACE_WITH_STAGE5_FLAG"),
+    points: 300,
+  },
+  {
+    stageNumber: 6,
+    title: "The Note-Taking App That Remembers Too Much",
+    type: "NETWORK",
+    description:
+      "Someone on the dev team wrote a quick CLI note-taking tool in C \"for internal use only.\" It's been running on a server with a flag sitting in an environment variable. The binary and a netcat connection are provided — find the bug, get a shell, read the flag.",
+    hintText: "Check for buffer overflows or format string vulnerabilities in the C binary.",
+    contentUrl: null,
+    answerHash: hashAnswer("REPLACE_WITH_STAGE6_FLAG"),
+    points: 350,
+  },
+  {
+    stageNumber: 7,
+    title: "The Over-Restricted Python Jail",
+    type: "OSINT",
+    description:
+      "A junior dev built a \"safe\" Python calculator for internal use, convinced that blacklisting a few keywords makes eval() safe. It's running locally and reads the flag into memory at startup. Break out of the sandbox and read it.",
+    hintText: "Inspect Python builtins, __subclasses__(), or unicode bypasses to escape the sandbox.",
+    contentUrl: null,
+    answerHash: hashAnswer("REPLACE_WITH_STAGE7_FLAG"),
     points: 300,
   },
   {
     stageNumber: 8,
-    title: "Unmask",
+    title: "The Serial Checker Nobody Documented",
     type: "REVERSE_ENGINEERING",
     description:
-      "Final stage. A pixelated mosaic hides the truth. Use the de-pixelation notebook linked below to reveal what lies beneath. Your flag is unique — it belongs only to you.",
-    hintText:
-      "Run the Jupyter notebook. Use your CyberCarnival username as the seed parameter. Your flag will be displayed on this page once you complete the notebook.",
-    contentUrl:
-      "https://github.com/KoKuToru/de-pixelate_gaV-O6NPWrl/blob/master/example/mosaic-area.ipynb",
-    answerHash: null,
+      "We found an old internal licensing tool on a decommissioned build server. It validates a \"license key\" before unlocking a hidden admin panel, but nobody left notes on the algorithm. Reverse engineer the binary, find a valid key, and run it to reveal the flag.",
+    hintText: "Decompile with Ghidra or IDA Pro to find the key validation routine.",
+    contentUrl: null,
+    answerHash: hashAnswer("REPLACE_WITH_STAGE8_FLAG"),
     finalBaseCode: "CYBERCARNIVAL_STAGE8_SECRET_SEED_2026",
-    points: 500,
+    points: 258,
   },
 ];
 
